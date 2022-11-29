@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:todo_app_flutter/modules/archived_tasks/archived_tasks_screen.dart';
 import 'package:todo_app_flutter/modules/done_tasks/done_tasks_screen.dart';
@@ -31,6 +32,7 @@ class _HomeLayoutState extends State<HomeLayout> {
     'Archived Tasks',
   ];
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  var formKey = GlobalKey<FormState>();
 
   //هو المفروض بيبقى مقفول اول ما بفتح الاب
   bool isBottomSheetShown = false;
@@ -38,6 +40,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   late Database database;
   var titleController = TextEditingController();
   var timeController = TextEditingController();
+  var dateController = TextEditingController();
 
   @override
   void initState() {
@@ -57,47 +60,95 @@ class _HomeLayoutState extends State<HomeLayout> {
         onPressed: () {
           //لو هو بترو اقفل وخليه بفولس علشان لما يبقى فولس يروح على else ويفتحه
           if (isBottomSheetShown) {
-            Navigator.pop(context);
-            setState(() {
-              isBottomSheetShown = false;
-              fabIcon = Icons.edit;
-            });
+            //عملت الفاليديت هنا علشان المفروض قبل ما اقفل اتشك الاول واعمل فاليديت
+            if (formKey.currentState!.validate()) {
+              insertToDatabase(
+                      title: titleController.text,
+                      date: dateController.text,
+                      time: timeController.text)
+                  .then((value) {
+                   // print(value);
+                    Navigator.pop(context);
+                    setState(() {
+                      isBottomSheetShown = false;
+                      fabIcon = Icons.edit;
+                    });
+              });
+
+            }
           }
           //لو البوتمشيت مش مفتوح يعني ب فولس روح افتحه وخليه ترو علشان يروح يقفله ويخليه بفولس
           else {
             scaffoldKey.currentState?.showBottomSheet((context) => Container(
                   color: Colors.grey[200],
                   padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      defaultTextFormFiled(
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'title must not be empty';
-                            }
-                          },
-                          controller: titleController,
-                          label: 'Task Title',
-                          prefixIcon: Icons.title,
-                          type: TextInputType.text),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      defaultTextFormFiled(
-                          onTap: () {
-                            print('timing tapped');
-                          },
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'data must not be empty';
-                            }
-                          },
-                          controller: timeController,
-                          label: '20.30',
-                          prefixIcon: Icons.timer,
-                          type: TextInputType.text),
-                    ],
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        //task title
+                        defaultTextFormFiled(
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'title must not be empty';
+                              }
+                            },
+                            controller: titleController,
+                            label: 'Task title',
+                            prefixIcon: Icons.title,
+                            type: TextInputType.text),
+                        const SizedBox(
+                          height: 15.0,
+                        ),
+                        //task time
+                        defaultTextFormFiled(
+                            onTap: () {
+                              showTimePicker(
+                                      context: context,
+                                      initialTime: TimeOfDay.now())
+                                  .then((value) {
+                                timeController.text = value!.format(context);
+                                //print(value?.format(context));
+                              });
+                            },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'time must not be empty';
+                              }
+                            },
+                            controller: timeController,
+                            label: 'Task Time',
+                            prefixIcon: Icons.timer,
+                            type: TextInputType.datetime),
+                        const SizedBox(
+                          height: 15.0,
+                        ),
+                        //task date
+                        defaultTextFormFiled(
+                            onTap: () {
+                              showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.parse('2023-01-01'))
+                                  .then((value) {
+                                dateController.text =
+                                    DateFormat.yMMMd().format(value!);
+                                //print(DateFormat.yMMMd().format(value!));
+                              });
+                            },
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'date must not be empty';
+                              }
+                            },
+                            controller: dateController,
+                            label: 'Task Date',
+                            prefixIcon: Icons.calendar_today_outlined,
+                            type: TextInputType.datetime),
+                      ],
+                    ),
                   ),
                 ));
             setState(() {
@@ -161,6 +212,7 @@ class _HomeLayoutState extends State<HomeLayout> {
   Future<String> getName() async {
     return ' Ahmed Ali';
   }*/
+
   void createDatabase() async {
     //openDatabase Future<Database> علشان كده لازم اسينك واويت
     database = await openDatabase(
@@ -184,17 +236,18 @@ class _HomeLayoutState extends State<HomeLayout> {
     });
   }
 
-  void insertToDatabase() {
-    database.transaction((txn) {
-      txn
-          .rawInsert(
-              'INSERT INTO tasks(title , data , time , status ) VALUES("first task","28/11/2022","20.31","new")')
+  Future insertToDatabase(
+      {required String title,
+      required String date,
+      required String time}) async {
+    return await database.transaction((txn) async{
+      txn.rawInsert(
+              'INSERT INTO tasks(title , data , time , status ) VALUES("$title","$date","$time","new")')
           .then((value) {
         print('$value Inserted Successfully');
       }).catchError((error) {
         print('Error When Creating Tabel ${error.toString()}');
       });
-      throw '';
     });
   }
 }
