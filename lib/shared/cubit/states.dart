@@ -1,5 +1,5 @@
 abstract class AppStates{}
-
+//هنا مش هبعت داتا علشان انا هعمل ليسن بس
 class AppInitialState extends AppStates{}
 
 class AppChangeBottomNavBarState extends AppStates{}
