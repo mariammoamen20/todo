@@ -38,15 +38,11 @@ class AppCubit extends Cubit<AppStates> {
   List<Map> archivedTasks = [];
 
   void createDatabase() {
-    //openDatabase Future<Database> علشان كده لازم اسينك واويت
     openDatabase(
-        //اسم الفيل او اسم الداتا بيز
         'todo.db',
         version: 1,
-        //create databse
         onCreate: (database, version) {
       debugPrint('database created');
-      //create table
       database
           .execute(
               'CREATE TABLE tasks (id INTEGER PRIMARY KEY , title TEXT , data TEXT , time TEXT , status TEXT )')
@@ -59,7 +55,6 @@ class AppCubit extends Cubit<AppStates> {
       getDataFromDatabase(database);
       debugPrint('database opened');
     }).then((value) {
-      //value and database are same objects from database
       database = value;
       emit(AppCreateDatabaseState());
     });
@@ -76,7 +71,6 @@ class AppCubit extends Cubit<AppStates> {
           .then((value) {
         print('$value Inserted Successfully');
         emit(AppInsertToDatabaseState());
-        //بعد ما بعمل انسيرت بروح  اعمل جيت لداتا دي في السكرين بتاعت نيو تاسك
         getDataFromDatabase(database);
       }).catchError((error) {
         print('Error When Creating Tabel ${error.toString()}');

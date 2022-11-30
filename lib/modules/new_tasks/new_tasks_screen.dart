@@ -9,8 +9,6 @@ class NewTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //مش هحط هنا سكفولد علشان هي كوجوده اوردي في home layout
-    //انا بكريت البلوك مره واحده بس بالبلوك بروفيدر مش وبعد كده بشغله او بعمل عليه ليسن في اي سكرينه عن طريق البلوك كونسيمور
    return BlocConsumer<AppCubit,AppStates>(
      listener: (context,state){},
      builder: (context,state){

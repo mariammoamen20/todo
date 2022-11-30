@@ -10,7 +10,6 @@ class DoneTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //مش هحط هنا سكفولد علشان هي كوجوده اوردي في home layout
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context,state){},
       builder: (context,state){
