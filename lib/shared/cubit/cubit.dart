@@ -117,4 +117,11 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppUpdateState());
     });
   }
+
+  void deleteData({required int id}){
+    database.rawDelete('DELETE FROM tasks WHERE id = ?', [id]).then((value){
+      getDataFromDatabase(database);
+      emit(AppDeleteFromDatabaseState());
+    });
+  }
 }

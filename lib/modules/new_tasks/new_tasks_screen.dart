@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app_flutter/shared/components/components.dart';
@@ -9,21 +10,14 @@ class NewTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return BlocConsumer<AppCubit,AppStates>(
-     listener: (context,state){},
-     builder: (context,state){
-       var cubit = AppCubit.get(context);
-       return ListView.separated(itemBuilder: (context,index)=>buildTaskItem(cubit.newTasks[index],context),
-           separatorBuilder: (context,index)=>Padding(
-             padding: const EdgeInsetsDirectional.only(start: 10.0,end: 10.0),
-             child: Container(
-               height: 1.0,
-               width: double.infinity,
-               color: Colors.grey,
-             ),
-           ),
-           itemCount: cubit.newTasks.length);
-     },
-   );
+    return BlocConsumer<AppCubit, AppStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        var tasks = AppCubit.get(context).newTasks;
+        return buildListItem(
+          tasks: tasks,
+        );
+      },
+    );
   }
 }

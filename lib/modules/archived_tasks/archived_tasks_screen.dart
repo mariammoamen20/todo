@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../shared/components/components.dart';
 import '../../shared/cubit/cubit.dart';
@@ -10,20 +11,13 @@ class ArchivedTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocConsumer<AppCubit,AppStates>(
-      listener: (context,state){},
-      builder: (context,state){
-        var cubit = AppCubit.get(context);
-        return ListView.separated(itemBuilder: (context,index)=>buildTaskItem(cubit.archivedTasks[index],context),
-            separatorBuilder: (context,index)=>Padding(
-              padding: const EdgeInsetsDirectional.only(start: 10.0,end: 10.0),
-              child: Container(
-                height: 1.0,
-                width: double.infinity,
-                color: Colors.grey,
-              ),
-            ),
-            itemCount: cubit.archivedTasks.length);
+    return BlocConsumer<AppCubit, AppStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        var tasks = AppCubit.get(context).archivedTasks;
+        return buildListItem(
+          tasks: tasks,
+        );
       },
     );
   }
