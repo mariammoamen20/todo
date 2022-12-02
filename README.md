@@ -2,7 +2,7 @@
 
 A new Flutter project.
 
-## imporayant branch for me
+## important branch for me
 ## Getting Started
 
 This project is a starting point for a Flutter application.
