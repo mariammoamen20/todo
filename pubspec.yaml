@@ -41,6 +41,7 @@ dependencies:
   conditional_builder_null_safety: ^0.0.6
   bloc: ^8.1.0
   flutter_bloc: ^8.1.0
+  fluttertoast: ^8.1.1
 
 
 dev_dependencies:
